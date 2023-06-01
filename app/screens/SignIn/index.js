@@ -45,10 +45,7 @@ export default function SignIn({navigation}) {
       dispatch(
         AuthActions.authentication(email, password, response => {
           console.log('etro aqui')
-          if (response.success) {
-            setLoading(false);
-            navigation.goBack();
-          }
+         a
         }),
       );
     }
@@ -80,7 +77,7 @@ export default function SignIn({navigation}) {
           keyboardVerticalOffset={offsetKeyboard}
           style={{flex: 1}}>
           <View style={styles.contain}>
-            <Text>{loginStatus.message}</Text>
+            <Text>{loginStatus}</Text>
             <TextInput
               onChangeText={text => setEmail(text)}
               onFocus={() => {

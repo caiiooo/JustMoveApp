@@ -186,7 +186,7 @@ function BottomTabNavigator() {
   const {colors} = useTheme();
   const font = useFont();
   const auth = useSelector(state => state.auth);
-  const login = auth.login.success;
+  const login = auth.login?.success;
 
   return (
     <BottomTab.Navigator
