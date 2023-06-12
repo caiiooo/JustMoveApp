@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {AuthActions} from '@actions';
 import {
   View,
@@ -7,52 +7,51 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import {BaseStyle, useTheme} from '@config';
-import {Header, SafeAreaView, Icon, Text, Button, TextInput} from '@components';
+import { BaseStyle, useTheme } from '@config';
+import { Header, SafeAreaView, Icon, Text, Button, TextInput } from '@components';
 import styles from './styles';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
-export default function SignIn({navigation}) {
-  const {colors} = useTheme();
-  const {t} = useTranslation();
+export default function SignIn({ navigation }) {
+  const { colors } = useTheme();
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const offsetKeyboard = Platform.select({
     ios: 0,
     android: 20,
   });
-  const loginStatus = useSelector(state => state.auth.login);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState({email: true, password: true});
+  const [success, setSuccess] = useState({ email: true, password: true });
 
   /**
    * call when action login
    *
    */
   const onLogin = () => {
-    console.log('aaaaaaaaa')
     if (email == '' || password == '') {
       setSuccess({
         ...success,
         email: false,
         password: false,
       });
-    } else {
-      setLoading(true);
-      console.log('console')
-      dispatch(
-        AuthActions.authentication(email, password, response => {
-          console.log('etro aqui')
-         a
-        }),
-      );
+      return;
     }
+    setLoading(true);
+    dispatch(
+      AuthActions.authentication(email, password, response => {
+        if(response.success){
+          navigation.navigate('Profile');
+        }
+      }),
+    );
+
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <Header
         title={t('sign_in')}
         renderLeft={() => {
@@ -75,9 +74,8 @@ export default function SignIn({navigation}) {
         <KeyboardAvoidingView
           behavior={Platform.OS === 'android' ? 'height' : 'padding'}
           keyboardVerticalOffset={offsetKeyboard}
-          style={{flex: 1}}>
+          style={{ flex: 1 }}>
           <View style={styles.contain}>
-            <Text>{loginStatus}</Text>
             <TextInput
               onChangeText={text => setEmail(text)}
               onFocus={() => {
@@ -91,7 +89,7 @@ export default function SignIn({navigation}) {
               value={email}
             />
             <TextInput
-              style={{marginTop: 10}}
+              style={{ marginTop: 10 }}
               onChangeText={text => setPassword(text)}
               onFocus={() => {
                 setSuccess({
@@ -105,7 +103,7 @@ export default function SignIn({navigation}) {
               value={password}
             />
             <Button
-              style={{marginTop: 20}}
+              style={{ marginTop: 20 }}
               full
               loading={loading}
               onPress={() => {
@@ -115,7 +113,7 @@ export default function SignIn({navigation}) {
             </Button>
             <TouchableOpacity
               onPress={() => navigation.navigate('ResetPassword')}>
-              <Text body1 grayColor style={{marginTop: 25}}>
+              <Text body1 grayColor style={{ marginTop: 25 }}>
                 {t('forgot_your_password')}
               </Text>
             </TouchableOpacity>

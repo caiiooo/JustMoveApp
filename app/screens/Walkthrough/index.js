@@ -65,17 +65,6 @@ export default function Walkthrough({navigation}) {
         <View style={{width: '100%'}}>
           <Button
             full
-            style={{
-              backgroundColor: BaseColor.navyBlue,
-              marginTop: 20,
-            }}
-            onPress={() => {
-              authentication();
-            }}>
-            {t('login_facebook')}
-          </Button>
-          <Button
-            full
             style={{marginTop: 20}}
             loading={loading}
             onPress={() => navigation.navigate('SignIn')}>

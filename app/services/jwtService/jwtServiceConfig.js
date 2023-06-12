@@ -1,7 +1,7 @@
 const prodConfig = {
   // apiKey           : "YOUR_API_KEY",
   // authDomain       : "your-app.firebaseapp.com",
-  databaseURL: "https://user-service-dot-tecnova-backend-homo.appspot.com"
+  databaseURL: "https://justmove-380822.rj.r.appspot.com"
   // projectId        : "your-app",
   // storageBucket    : "your-app.appspot.com",
   // messagingSenderId: "YOUR_MESSAGING_SENDER_ID"

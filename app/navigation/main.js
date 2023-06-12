@@ -1,10 +1,10 @@
-import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {useSelector} from 'react-redux';
-import {BaseColor, useTheme, useFont} from '@config';
-import {useTranslation} from 'react-i18next';
-import {Icon} from '@components';
+import React, {useState, useEffect} from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSelector, useDispatch } from 'react-redux';
+import { BaseColor, useTheme, useFont } from '@config';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@components';
 
 /* Just Move Screen */
 import AddPlace from '@screens/AddPlace';
@@ -84,6 +84,8 @@ import Booking from '@screens/Booking';
 import Messenger from '@screens/Messenger';
 import Post from '@screens/Post';
 import Profile from '@screens/Profile';
+// import authService from '@services/authService';
+import * as authActions from '@actions/auth';
 
 const MainStack = createStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -182,15 +184,23 @@ export default function Main() {
 }
 
 function BottomTabNavigator() {
-  const {t} = useTranslation();
-  const {colors} = useTheme();
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const { colors } = useTheme();
   const font = useFont();
   const auth = useSelector(state => state.auth);
   const login = auth.login?.success;
 
+
+  useEffect(()=>{
+    (()=>{
+      dispatch(authActions.isUserAuthenticated())
+    })()
+  },[])
+
   return (
     <BottomTab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Place"
       screenOptions={{
         tabBarInactiveTintColor: BaseColor.grayColor,
         tabBarActiveTintColor: colors.primary,
@@ -202,22 +212,22 @@ function BottomTabNavigator() {
         },
       }}>
       <BottomTab.Screen
+        name="Place"
+        component={Place}
+        options={{
+          title: t('place'),
+          tabBarIcon: ({ color }) => {
+            return <Icon color={color} name="bookmark" size={20} solid />;
+          },
+        }}
+      />
+      {/* <BottomTab.Screen
         name="Home"
         component={Home}
         options={{
           title: t('home'),
-          tabBarIcon: ({color}) => {
+          tabBarIcon: ({ color }) => {
             return <Icon color={color} name="home" size={20} solid />;
-          },
-        }}
-      />
-      <BottomTab.Screen
-        name="Place"
-        component={Place}
-        options={{
-          title: t('booking'),
-          tabBarIcon: ({color}) => {
-            return <Icon color={color} name="bookmark" size={20} solid />;
           },
         }}
       />
@@ -226,7 +236,7 @@ function BottomTabNavigator() {
         component={Messenger}
         options={{
           title: t('message'),
-          tabBarIcon: ({color}) => {
+          tabBarIcon: ({ color }) => {
             return <Icon solid color={color} name="envelope" size={20} />;
           },
         }}
@@ -236,17 +246,17 @@ function BottomTabNavigator() {
         component={Post}
         options={{
           title: t('news'),
-          tabBarIcon: ({color}) => {
+          tabBarIcon: ({ color }) => {
             return <Icon color={color} name="copy" size={20} solid />;
           },
         }}
-      />
+      /> */}
       <BottomTab.Screen
         name="Profile"
         component={login ? Profile : Walkthrough}
         options={{
           title: t('account'),
-          tabBarIcon: ({color}) => {
+          tabBarIcon: ({ color }) => {
             return <Icon solid color={color} name="user-circle" size={20} />;
           },
         }}

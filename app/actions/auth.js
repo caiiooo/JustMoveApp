@@ -1,21 +1,26 @@
 import * as actionTypes from './actionTypes';
-import jwtService from '../services/jwtService';
+import authService from '@services/authService';
+import { setUserToken, getUserToken, removeUSerToken } from '@utils/loginUtil'
 
-const onLogin = data => {
+const onLogin = () => {
   return {
     type: actionTypes.LOGIN_SUCCESS,
-    data,
+  };
+};
+const onLogout = () => {
+  return {
+    type: actionTypes.LOGIN_ERROR,
   };
 };
 
 export const authentication = (email, password, callback) => dispatch => {
-  //call api and dispatch action case
- jwtService
-    .signInWithEmailAndPassword(email, password)
+  authService
+    .login(email, password)
     .then(data => {
-      dispatch(onLogin(data));
+      setUserToken(data.user.token);
+      dispatch(onLogin());
       if (typeof callback === 'function') {
-        callback({success: true});
+        callback({ success: true, message: data.message });
       }
     })
     .catch(error => {
@@ -26,3 +31,22 @@ export const authentication = (email, password, callback) => dispatch => {
       });
     });
 };
+
+export const singOut = () => dispatch =>{
+  removeUSerToken()
+  dispatch(onLogout())
+}
+
+export const isUserAuthenticated = (callback) => dispatch => {
+  //get token info
+  getUserToken().then(token => {
+    if (token) {
+      dispatch(onLogin());
+      if (typeof callback === 'function') {
+        callback({ success: true });
+      }
+      return;
+    }
+    dispatch(onLogout());
+  });
+}

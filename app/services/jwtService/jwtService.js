@@ -4,48 +4,114 @@ import jwtDecode from "jwt-decode";
 import config from "./jwtServiceConfig";
 
 class jwtService {
-  init() {
-    this.setInterceptors();
-    this.handleAuthentication();
-  }
-
-  setInterceptors = () => {
-    axios.interceptors.response.use(
-      response => {
-        return response;
-      },
-      err => {
-        return new Promise((resolve, reject) => {
-          if (
-            err.response.status === 401 &&
-            err.config &&
-            !err.config.__isRetryRequest
-          ) {
-            // if you ever get an unauthorized response, logout the user
-            this.emit("onAutoLogout", "Invalid access_token");
-            this.setSession(null);
+  signInWithEmailAndPassword = (email, password) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .post(config.databaseURL + "/user/login", {
+          email,
+          password
+        })
+        .then(response => {
+          console.log(response)
+          if (response.data.user && response.data.token) {
+            this.setUserToken(response.data.token);
+            axios.defaults.headers.common = {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + response.data.token,
+            };
+            resolve(response.data);
+          } else {
+            reject(response.data.error);
           }
-          throw err;
+        }).catch(error => {
+          console.log(error)
+          reject("Erro desconhecido");
         });
+    });
+  };
+
+  setUserToken = async token => {
+    try {
+      return await AsyncStorage.setItem('@BitApp:userToken', token);
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  getUserToken = () => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const token = await AsyncStorage.getItem('@BitApp:userToken');
+
+        resolve(token);
+      } catch (e) {
+        reject(e);
       }
-    );
+    });
   };
 
-  handleAuthentication = () => {
-    let access_token = this.getAccessToken();
-
-    if (!access_token) {
-      return;
-    }
-
-    if (this.isAuthTokenValid(access_token)) {
-      this.setSession(access_token);
-      this.emit("onAutoLogin", true);
-    } else {
-      this.setSession(null);
-      this.emit("onAutoLogout", "access_token expired");
+  removeUSerToken = async () => {
+    try {
+      return await AsyncStorage.removeItem('@BitApp:userToken');
+    } catch (e) {
+      throw e;
     }
   };
+
+  isUserAuthenticated = () => {
+    return new Promise(async (resolve, reject) => {
+      // return false;
+      const userToken = await this.getUserToken();
+      //console.log("getUsetToken", userToken)
+      if (userToken) {
+        // headers: {
+        // 	'Content-Type' : 'application/json',
+        // 	'Authorization': 'Bearer ' + this.getAccessToken()
+        // }
+        axios.defaults.headers.common = {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + userToken,
+        };
+        resolve(true);
+      } else {
+        reject(false);
+      }
+    });
+  };
+
+  getTokenData = () => {
+    return new Promise((resolve, reject) => {
+      this.getUserToken()
+        .then(token => {
+          const decoded = jwtDecode(token);
+          if (!decoded) {
+            return reject(null);
+          }
+          return resolve(decoded);
+        })
+        .catch(err => reject(null));
+    });
+  };
+
+  getUserInfo = () => {
+    return new Promise((resolve, reject) => {
+      this.getTokenData().then(userData => {
+        axios
+          .get(config.databaseURL + '/userInfo/' + userData.data._id)
+          .then(response => {
+            if (response.data) resolve(response.data);
+            else reject(response.data.error);
+          })
+          .catch(err => {
+            console.log(err);
+            reject(err.response.data.message);
+          });
+      });
+    });
+  };
+
+
+  ///old
 
   createUser = data => {
     return new Promise((resolve, reject) => {
@@ -60,26 +126,7 @@ class jwtService {
     });
   };
 
-  signInWithEmailAndPassword = (email, password) => {
-    return new Promise((resolve, reject) => {
-      axios
-        .post(config.databaseURL + "/user/login", {
-          email,
-          password
-        })
-        .then(response => {
-          console.log(response)
-          if (response.data.user) {
-            resolve(response.data);
-          } else {
-            reject(response.data.error);
-          }
-        }).catch(error => {
-          console.log(error)
-          reject("Erro desconhecido");
-        });
-    });
-  };
+
 
   signInWithToken = () => {
     return new Promise((resolve, reject) => {

@@ -11,16 +11,14 @@ export default (state = initialState, action = {}) => {
       return {
         ...state,
         login: {
-          success:true,
-          data:action.data
+          success:true
         },
       };
     case actionTypes.LOGIN_ERROR:
       return {
         ...state,
         login: {
-          success:false,
-          data:action.payload
+          success:false
         },
       };
     default:

@@ -3,9 +3,15 @@
   "place_information": "Informações do Lugar",
   "place_name": "Nome do lugar",
   "place_modality": "Modalidade",
+  "place_location": "Localização",
   "add_image": "Adicionar Imagem",
   "place_images": "Galeria",
   "add_place_button": "Adicionar",
+  "place": "Lugares",
+  
+  "account": "Perfil",
+
+  
 
   "distance":"distancia",
   "modalitys":"Modalidades",
@@ -74,7 +80,6 @@
   "booking": "Booking",
   "message": "Message",
   "news": "News",
-  "account": "Account",
   "select_seats": "Select Seats",
   "booked": "Booked",
   "non_stop": "Non Stop",
@@ -163,7 +168,6 @@
   "date_time": "Date/Time",
   "date": "Date",
   "address": "Address",
-  "description": "Description",
   "see_details": "See Details",
   "facilities": "Facilities",
   "you_may_also_like": "You May Also Like",

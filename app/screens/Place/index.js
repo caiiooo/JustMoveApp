@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import {useSelector, useDispatch} from 'react-redux'
 import {FlatList, RefreshControl, View, Animated} from 'react-native';
 import {BaseStyle, useTheme} from '@config';
 import {Header, SafeAreaView, Icon, HotelItem, FilterSort} from '@components';
@@ -6,10 +7,14 @@ import styles from './styles';
 import * as Utils from '@utils';
 import {useTranslation} from 'react-i18next';
 import {HotelData} from '@data';
+import * as Actions from '@actions';
 
 export default function Place({navigation}) {
   const {colors} = useTheme();
+  const dispatch = useDispatch();
   const {t} = useTranslation();
+  const auth = useSelector(state => state.auth);
+  const login = auth.login?.success;
 
   const [modeView, setModeView] = useState('grid');
   const [hotels] = useState(HotelData);
@@ -354,23 +359,29 @@ export default function Place({navigation}) {
     }
   };
 
+  useEffect(()=>{
+    console.log(Actions)
+    // dispatch(Actions
+  },[])
+
+
   return (
     <View style={{flex: 1}}>
       <Header
-        title={t('hotels')}
+        title={t('place')}
         subTitle="24 Dec 2018, 2 Nights, 1 Room"
-        renderLeft={() => {
-          return (
-            <Icon
-              name="arrow-left"
-              size={20}
-              color={colors.primary}
-              enableRTL={true}
-            />
-          );
-        }}
+        // renderLeft={() => {
+        //   return (
+        //     <Icon
+        //       name="arrow-left"
+        //       size={20}
+        //       color={colors.primary}
+        //       enableRTL={true}
+        //     />
+        //   );
+        // }}
         renderRight={() => {
-          return <Icon name="plus" size={20} color={colors.primary} />;
+          return login && <Icon name="plus" size={20} color={colors.primary} />;
         }}
         onPressLeft={() => {
           navigation.goBack();

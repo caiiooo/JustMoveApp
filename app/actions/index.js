@@ -1,5 +1,6 @@
 import * as AuthActions from './auth';
 import * as ApplicationActions from './application';
-// import * as register from './register';
+import * as modalitysActions from './modalitys';
+import * as placesActions from './places';
 
-export {AuthActions, ApplicationActions};
+export {AuthActions, ApplicationActions, modalitysActions, placesActions};
