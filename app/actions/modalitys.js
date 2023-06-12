@@ -10,10 +10,12 @@ const getModalitys = modalitys => {
 
 
 export const onGetModalitys = modality => dispatch => {
-  console.log('modalitysService');
-  console.log(modalitysService);
+  // console.log('modalitysService');
+  // console.log(modalitysService);
   modalitysService.getModailtys().then(data => {
+    // console.log("+======")
     // console.log(data)
-    dispatch(getModalitys(data.modalitys));
+    // console.log("+======")
+    // dispatch(getModalitys(data.modalitys));
   })
 };

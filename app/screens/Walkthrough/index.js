@@ -71,12 +71,12 @@ export default function Walkthrough({navigation}) {
             {t('sign_in')}
           </Button>
           <View style={styles.contentActionBottom}>
-            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+            {/* <TouchableOpacity onPress={() => navigation.navigate('SignUp')}> */}
               <Text body1 grayColor>
                 {t('not_have_account')}
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => authentication()}>
+            {/* </TouchableOpacity> */}
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
               <Text body1 primaryColor>
                 {t('join_now')}
               </Text>

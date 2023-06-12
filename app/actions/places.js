@@ -1,19 +1,16 @@
 import * as actionTypes from './actionTypes';
-import placeService from '../services/placeService';
+import placeService from '@services/placeService';
 
-const getPlaces = modalitys => {
+const getPlaces = places => {
   return {
-    type: actionTypes.GET_MODALITYS,
-    modalitys,
+    type: actionTypes.GET_PLACES,
+    places,
   };
 };
 
-
 export const onGetPlaces = () => dispatch => {
-  console.log('placeService');
-  console.log(placeService);
-  placesService.getPlaces().then(data => {
-    // console.log(data)
+  placeService.getPlaces().then(data => {
+    // console.warn(data.places)
     dispatch(getPlaces(data.places));
-  })
+  });
 };

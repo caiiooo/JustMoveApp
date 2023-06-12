@@ -3,6 +3,7 @@ import Button from './Button';
 import Tag from './Tag';
 import Icon from './Icon';
 import HotelItem from './HotelItem';
+import PlaceItem from './PlaceItem';
 import BookingHistory from './BookingHistory';
 import StepProgress from './StepProgress';
 import PackageItem from './PackageItem';
@@ -60,6 +61,7 @@ export {
   Tag,
   Icon,
   HotelItem,
+  PlaceItem,
   BookingHistory,
   StepProgress,
   PackageItem,

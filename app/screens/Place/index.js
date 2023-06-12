@@ -2,19 +2,22 @@ import React, {useState, useEffect} from 'react';
 import {useSelector, useDispatch} from 'react-redux'
 import {FlatList, RefreshControl, View, Animated} from 'react-native';
 import {BaseStyle, useTheme} from '@config';
-import {Header, SafeAreaView, Icon, HotelItem, FilterSort} from '@components';
+import {Header, SafeAreaView, Icon, HotelItem, PlaceItem, FilterSort} from '@components';
 import styles from './styles';
 import * as Utils from '@utils';
 import {useTranslation} from 'react-i18next';
+import img from "@assets/images/room-1.jpg"
 import {HotelData} from '@data';
-import * as Actions from '@actions';
+import {placesActions} from '@actions';
 
 export default function Place({navigation}) {
   const {colors} = useTheme();
   const dispatch = useDispatch();
   const {t} = useTranslation();
   const auth = useSelector(state => state.auth);
+  const place = useSelector(state => state.place);
   const login = auth.login?.success;
+  const places = place.places;
 
   const [modeView, setModeView] = useState('grid');
   const [hotels] = useState(HotelData);
@@ -182,16 +185,16 @@ export default function Place({navigation}) {
                 {useNativeDriver: true},
               )}
               numColumns={2}
-              data={hotels}
+              data={places}
               key={'grid'}
-              keyExtractor={(item, index) => item.id}
+              keyExtractor={(item, index) => item._id}
               renderItem={({item, index}) => (
-                <HotelItem
+                <PlaceItem
                   grid
-                  image={item.image}
+                  image={img}
                   name={item.name}
                   location={item.location}
-                  price={item.price}
+                  // price={item.price}
                   available={item.available}
                   rate={item.rate}
                   rateStatus={item.rateStatus}
@@ -360,7 +363,8 @@ export default function Place({navigation}) {
   };
 
   useEffect(()=>{
-    console.log(Actions)
+    console.log("Actions", placesActions)
+    dispatch(placesActions.onGetPlaces())
     // dispatch(Actions
   },[])
 
