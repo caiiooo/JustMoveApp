@@ -26,6 +26,8 @@ import placeService from '@services/placeService';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useTranslation } from 'react-i18next';
+import * as ImagePicker from 'expo-image-picker'; 
+
 import styles from './styles';
 
 export default function AddPlace({ route, navigation }) {
@@ -41,6 +43,8 @@ export default function AddPlace({ route, navigation }) {
   const [placeName, setPlaceName] = useState('Test place');
   const [placeLocation, setPlaceLocation] = useState({});
   const [placeModality, setPlaceModality] = useState({});
+  
+  const [pickedImagePath, setPickedImagePath] = useState({});
 
   const [location, setLocation] = useState({});
   const [loading, setLoading] = useState(false);
@@ -141,43 +145,22 @@ export default function AddPlace({ route, navigation }) {
   };
 
   const onAddImage = async image => {
-    try {
-      // Display the camera to the user and wait for them to take a photo or to cancel
-      // the action
-      console.log(ImagePicker)
-      let result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        aspect: [4, 3],
-      });
+    // Ask the user for the permission to access the media library 
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-      if (result.cancelled) {
-        return;
-      }
+    if (permissionResult.granted === false) {
+      alert("You've refused to allow this appp to access your photos!");
+      return;
+    }
 
-      // ImagePicker saves the taken photo to disk and returns a local URI to it
-      let localUri = result.uri;
-      let filename = localUri.split('/').pop();
+    const result = await ImagePicker.launchImageLibraryAsync();
 
-      // Infer the type of the image
-      let match = /\.(\w+)$/.exec(filename);
-      let type = match ? `image/${match[1]}` : `image`;
+    // Explore the result
+    console.log(result);
 
-      // Upload the image using the fetch and FormData APIs
-      let formData = new FormData();
-      // Assume "photo" is the name of the form field the server expects
-      formData.append('photo', { uri: localUri, name: filename, type });
-
-      // return await fetch(YOUR_SERVER_URL, {
-      //   method: 'POST',
-      //   body: formData,
-      //   headers: {
-      //     'content-type': 'multipart/form-data',
-      //   },
-      // });
-
-
-    } catch (error) {
-      console.log(error)
+    if (!result.cancelled) {
+      setPickedImagePath(result.uri);
+      console.log(result.uri);
     }
   };
 
@@ -241,7 +224,7 @@ export default function AddPlace({ route, navigation }) {
               )}
             />
 
-            {/* <Text headline semibold style={{ marginTop: 20 }}>
+            <Text headline semibold style={{ marginTop: 20 }}>
               {t('place_images')}
             </Text>
             <View style={styles.buttonAddImage}>
@@ -255,7 +238,7 @@ export default function AddPlace({ route, navigation }) {
             </View>
             <View style={styles.contentImageGird}>
               <View style={{ flex: 4, marginRight: 10 }}>
-                <Card>
+                <Card image={setPickedImagePath}>
                   <Text headline semibold whiteColor>
                     Dallas
                   </Text>
@@ -291,7 +274,7 @@ export default function AddPlace({ route, navigation }) {
                   </View>
                 </View>
               </View>
-            </View> */}
+            </View>
 
             <Text headline semibold style={{ marginTop: 20 }}>
               {t('place_location')}

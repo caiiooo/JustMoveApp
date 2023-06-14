@@ -8,6 +8,12 @@
   "place_images": "Galeria",
   "add_place_button": "Adicionar",
   "place": "Lugares",
+  "select_camera": "Camera",
+  "select_library": "Biblioteca",
+  "input_email": "E-mail",
+  "input_name": "Nome",
+  "input_password": "Senha",
+  "input_repassword": "Repetir a senha",
   
   "account": "Perfil",
 
@@ -130,7 +136,6 @@
   "name": "Name",
   "input_name": "Input name",
   "email": "Email",
-  "input_email": "E-mail",
   "code": "Code",
   "input_address": "Input address",
   "phone_number": "Phone phone number",

@@ -61,7 +61,7 @@ export default function ChangePassword({navigation}) {
             />
             <View style={styles.contentTitle}>
               <Text headline semibold>
-                {t('re_password')}
+                {t('input_repassword')}
               </Text>
             </View>
             <TextInput

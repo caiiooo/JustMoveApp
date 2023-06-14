@@ -17,4 +17,18 @@ export default StyleSheet.create({
     padding: 10,
     width: '100%',
   },
+  thumb: {
+    backgroundColor: BaseColor.kashmir,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 20,
+  },
+  image: {
+    width: 100,
+    borderRadius: 50,
+    height: 100,
+  },
 });
