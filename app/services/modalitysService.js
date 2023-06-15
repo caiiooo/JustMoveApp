@@ -8,6 +8,8 @@ class modalitysService {
       axios
         .get(config.databaseURL + "/modalitys")
         .then((response) => {
+          console.log("--------------------------------------------------------------")
+          console.log(response.data)
           if (response.data) {
             resolve(response.data);
           } else {

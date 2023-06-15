@@ -1,12 +1,19 @@
 import React, {useState, useEffect} from 'react';
-import {useSelector, useDispatch} from 'react-redux'
+import {useSelector, useDispatch} from 'react-redux';
 import {FlatList, RefreshControl, View, Animated} from 'react-native';
 import {BaseStyle, useTheme} from '@config';
-import {Header, SafeAreaView, Icon, HotelItem, PlaceItem, FilterSort} from '@components';
+import {
+  Header,
+  SafeAreaView,
+  Icon,
+  HotelItem,
+  PlaceItem,
+  FilterSort,
+} from '@components';
 import styles from './styles';
 import * as Utils from '@utils';
 import {useTranslation} from 'react-i18next';
-import img from "@assets/images/room-1.jpg"
+import img from '@assets/images/room-1.jpg';
 import {HotelData} from '@data';
 import {placesActions} from '@actions';
 
@@ -188,25 +195,28 @@ export default function Place({navigation}) {
               data={places}
               key={'grid'}
               keyExtractor={(item, index) => item._id}
-              renderItem={({item, index}) => (
-                <PlaceItem
-                  grid
-                  image={img}
-                  name={item.name}
-                  location={item.location}
-                  // price={item.price}
-                  available={item.available}
-                  rate={item.rate}
-                  rateStatus={item.rateStatus}
-                  numReviews={item.numReviews}
-                  services={item.services}
-                  onPress={() => navigation.navigate('PlaceDetail')}
-                  style={{
-                    marginBottom: 15,
-                    marginLeft: 15,
-                  }}
-                />
-              )}
+              renderItem={({item, index}) => {
+                console.log(item?.photo[0]?.url);
+                return (
+                  <PlaceItem
+                    grid
+                    image={{uri: item?.photo[0]?.url}}
+                    name={item.name}
+                    location={item.location}
+                    // price={item.price}
+                    available={item.available}
+                    rate={item.rate}
+                    rateStatus={item.rateStatus}
+                    numReviews={item.numReviews}
+                    services={item.services}
+                    onPress={() => navigation.navigate('PlaceDetail')}
+                    style={{
+                      marginBottom: 15,
+                      marginLeft: 15,
+                    }}
+                  />
+                );
+              }}
             />
             <Animated.View
               style={[
@@ -362,12 +372,11 @@ export default function Place({navigation}) {
     }
   };
 
-  useEffect(()=>{
-    console.log("Actions", placesActions)
-    dispatch(placesActions.onGetPlaces())
+  useEffect(() => {
+    console.log('Actions', placesActions);
+    dispatch(placesActions.onGetPlaces());
     // dispatch(Actions
-  },[])
-
+  }, []);
 
   return (
     <View style={{flex: 1}}>

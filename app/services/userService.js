@@ -1,37 +1,28 @@
 import axios from 'axios';
 import config from './serviceConfig';
 import moment from 'moment';
+
 class placeService {
-  createPlace = data => {
+  createUser = data => {
     return new Promise((resolve, reject) => {
-      try {
-        bodyFormData = new FormData();
-        bodyFormData.append('name', data.name);
-        bodyFormData.append('locationcoordinateslong', data.location.longitude);
-        bodyFormData.append('locationcoordinateslatt', data.location.latitude);
-        bodyFormData.append('modality', data.modality);
-        data.photo.forEach((o, index) => {
-          bodyFormData.append('placeImages', {
-            uri: o.uri.replace('file://', ''),
-            type: 'image/jpg',
-            name: `${data.name.replace(' ', '-')}_${moment().get()}_${index}.jpg`,
-          });
-        });
+      bodyFormData = new FormData();
 
-        console.log(bodyFormData);
-      } catch (error) {
-        console.log(error);
-      }
-
+      bodyFormData.append('username', data.username);
+      bodyFormData.append('password', data.password);
+      bodyFormData.append('email', data.email);
+      bodyFormData.append('photo', {
+        uri: data.photo.replace('file://', ''),
+        type: 'image/jpg',
+        name: `${data.username.replace(' ', '-')}_${moment().get()}.jpg`,
+      });
       axios
-        .post(config.databaseURL + '/places', bodyFormData, {
+        .post(config.databaseURL + '/user/singup', bodyFormData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         })
         .then(response => {
-          if (response.data.createdPlace)
-            resolve({success: true, data: response.data});
+          if (response.data) resolve({success: true, data: response.data});
           else reject(response.data.error);
         })
         .catch(error => {
@@ -58,20 +49,20 @@ class placeService {
     });
   };
 
-  getPlaces = () => {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(config.databaseURL + '/places')
-        .then(response => {
-          if (response.data) {
-            resolve(response.data);
-          } else {
-            reject(response.error);
-          }
-        })
-        .catch(() => reject('Erro desconhecido'));
-    });
-  };
+  // getPlaces = () => {
+  //   return new Promise((resolve, reject) => {
+  //     axios
+  //       .get(config.databaseURL + '/places')
+  //       .then(response => {
+  //         if (response.data) {
+  //           resolve(response.data);
+  //         } else {
+  //           reject(response.error);
+  //         }
+  //       })
+  //       .catch(() => reject('Erro desconhecido'));
+  //   });
+  // };
 }
 
 const instance = new placeService();

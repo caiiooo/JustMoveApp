@@ -11,11 +11,16 @@ export default StyleSheet.create({
     marginTop: 10,
   },
   contentImageGird: {
-    flexDirection: 'row',
-    height: Utils.scaleWithPixel(160),
+    // height: Utils.scaleWithPixel(160),
     marginTop: 10,
   },
+  image: {
+    width: 100,
+    borderRadius: 8,
+    height: 100,
+  },
   map: {
-    ...StyleSheet.absoluteFillObject,
+    // ...StyleSheet.absoluteFillObject,
+    height: Utils.scaleWithPixel(360),
   },
 });

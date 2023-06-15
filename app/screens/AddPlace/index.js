@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   KeyboardAvoidingView,
@@ -7,10 +7,12 @@ import {
   FlatList,
   TouchableOpacity,
   InteractionManager,
+  Image,
+  Alert,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 // import * as ImagePicker from 'expo-image-picker';
-import { BaseStyle, BaseColor, useTheme } from '@config';
+import {BaseStyle, BaseColor, useTheme} from '@config';
 import {
   Header,
   SafeAreaView,
@@ -21,19 +23,19 @@ import {
   Tag,
   Card,
 } from '@components';
-import { modalitysActions, ApplicationActions } from '@actions';
+import {modalitysActions} from '@actions';
 import placeService from '@services/placeService';
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
-import { useTranslation } from 'react-i18next';
-import * as ImagePicker from 'expo-image-picker'; 
+import {useTranslation} from 'react-i18next';
+import * as ImagePicker from 'expo-image-picker';
 
 import styles from './styles';
 
-export default function AddPlace({ route, navigation }) {
+export default function AddPlace({route, navigation}) {
   const dispatch = useDispatch();
-  const { colors } = useTheme();
-  const { t } = useTranslation();
+  const {colors} = useTheme();
+  const {t} = useTranslation();
   const offsetKeyboard = Platform.select({
     ios: 0,
     android: 20,
@@ -43,8 +45,8 @@ export default function AddPlace({ route, navigation }) {
   const [placeName, setPlaceName] = useState('Test place');
   const [placeLocation, setPlaceLocation] = useState({});
   const [placeModality, setPlaceModality] = useState({});
-  
-  const [pickedImagePath, setPickedImagePath] = useState({});
+
+  const [placeImages, setPlaceImages] = useState([]);
 
   const [location, setLocation] = useState({});
   const [loading, setLoading] = useState(false);
@@ -52,15 +54,20 @@ export default function AddPlace({ route, navigation }) {
   const [success, setSuccess] = useState({
     placeName: true,
     placeLocation: false,
-    placeModality
+    placeModality,
   });
-
 
   const [renderMapView, setRenderMapView] = useState(false);
 
   useEffect(() => {
-    dispatch(modalitysActions.onGetModalitys())
+    dispatch(modalitysActions.onGetModalitys());
   }, []);
+  useEffect(() => {
+    console.log("=============================")
+    console.log(modalitys)
+    console.log(modalitys.length)
+  }, [modalitys]);
+
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       setRenderMapView(true);
@@ -69,41 +76,42 @@ export default function AddPlace({ route, navigation }) {
 
   useEffect(() => {
     (async () => {
-
-      let { status } = await Location.requestForegroundPermissionsAsync();
+      let {status} = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
         return;
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      console.log('locations', location)
-      const { coords } = location
-      setLocation({ latitude: coords.latitude, longitude: coords.longitude });
-      setPlaceLocation({ latitude: coords.latitude, longitude: coords.longitude });
+      console.log('locations', location);
+      const {coords} = location;
+      setLocation({latitude: coords.latitude, longitude: coords.longitude});
+      setPlaceLocation({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      });
     })();
   }, []);
-
 
   const isValidForm = () => {
     let formValid = true;
     let nextSucessState = success;
     if (placeName === '') {
-      nextSucessState = { ...nextSucessState, placeName: false };
-      formValid = false
+      nextSucessState = {...nextSucessState, placeName: false};
+      formValid = false;
     }
     if (placeModality === {}) {
-      nextSucessState = { ...nextSucessState, placeModality: false };
-      formValid = false
+      nextSucessState = {...nextSucessState, placeModality: false};
+      formValid = false;
     }
     if (placeLocation === {}) {
-      nextSucessState = { ...nextSucessState, placeLocation: false };
-      formValid = false
+      nextSucessState = {...nextSucessState, placeLocation: false};
+      formValid = false;
     }
 
-    setSuccess(nextSucessState)
+    setSuccess(nextSucessState);
     return formValid;
-  }
+  };
   /**
    *
    * Called when process checkout
@@ -114,59 +122,49 @@ export default function AddPlace({ route, navigation }) {
       const place = {
         name: placeName,
         location: placeLocation,
-        modality: placeModality
-      }
-      placeService.createPlace(place).then(result => {
-        console.log('result', result)
-        if (result.success) {
-          navigation.navigate('Place')
-          console.log(result.data.message)
-        }
-      }).then(error => { console.log(error) })
-      setTimeout(() => {
-        setLoading(false);
-        // switch (bookingType) {
-        //   case 'Event':
-        //     navigation.navigate('EventTicket');
-        //     break;
-        //   case 'Bus':
-        //     navigation.navigate('BusTicket');
-        //     break;
-        //   default:
-        //     navigation.navigate('PaymentMethod');
-        //     break;
-        // }
-      }, 500);
+        modality: placeModality,
+        photo: placeImages,
+      };
+      placeService
+        .createPlace(place)
+        .then(result => {
+          console.log('result', result);
+          if (result.success) {
+            navigation.navigate('Place');
+            console.log(result.data.message);
+          }
+          setLoading(false);
+        })
+        .then(error => {
+          console.log(error);
+        })
+        .catch(error => {
+          setLoading(false);
+          if (error?.error && typeof error?.error === 'string')
+            return Alert.alert(error.error);
+          if (
+            error?.error?.message &&
+            typeof error?.error?.message === 'string'
+          )
+            return Alert.alert(error.error.message);
+          return Alert.alert('Erro desconhecido');
+        });
     }
   };
 
   const onSelectModality = select => {
-    setPlaceModality(select)
+    setPlaceModality(select);
   };
 
-  const onAddImage = async image => {
-    // Ask the user for the permission to access the media library 
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert("You've refused to allow this appp to access your photos!");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync();
-
-    // Explore the result
-    console.log(result);
-
-    if (!result.cancelled) {
-      setPickedImagePath(result.uri);
-      console.log(result.uri);
-    }
+  const onPhotoSelected = assets => {
+    console.log(Array.isArray(assets.assets))
+    console.log(Array.isArray(placeImages))
+    if (!Array.isArray(assets.assets)) assets.assets = [assets.assets];
+    setPlaceImages([...placeImages, ...assets.assets]);
   };
-
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{flex: 1}}>
       <Header
         title={t('add_place')}
         renderLeft={() => {
@@ -182,7 +180,7 @@ export default function AddPlace({ route, navigation }) {
         onPressLeft={() => {
           navigation.goBack();
         }}
-        onPressRight={() => { }}
+        onPressRight={() => {}}
       />
       <SafeAreaView
         style={BaseStyle.safeAreaView}
@@ -190,33 +188,34 @@ export default function AddPlace({ route, navigation }) {
         <KeyboardAvoidingView
           behavior={Platform.OS === 'android' ? 'height' : 'padding'}
           keyboardVerticalOffset={offsetKeyboard}
-          style={{ flex: 1 }}>
-          <ScrollView contentContainerStyle={{ paddingHorizontal: 20 }}>
-            <Text headline semibold style={{ marginTop: 20 }}>
+          style={{flex: 1}}>
+          <ScrollView
+            contentContainerStyle={{paddingHorizontal: 20, paddingBottom: 30}}>
+            <Text headline semibold style={{marginTop: 20}}>
               {t('place_information')}
             </Text>
             <TextInput
-              style={{ marginTop: 10 }}
+              style={{marginTop: 10}}
               onChangeText={text => setPlaceName(text)}
               placeholder={t('place_name')}
               success={success.placeName}
               value={placeName}
             />
 
-            <Text headline semibold style={{ marginTop: 20 }}>
+            <Text headline semibold style={{marginTop: 20}}>
               {t('place_modality')}
             </Text>
-            <View style={{ padding: 10 }}></View>
+            <View style={{padding: 10}}></View>
             <FlatList
-              contentContainerStyle={{ paddingLeft: 5, paddingRight: 20 }}
+              contentContainerStyle={{paddingLeft: 5, paddingRight: 20}}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
               data={modalitys}
               keyExtractor={item => item._id}
-              renderItem={({ item }) => (
+              renderItem={({item}) => (
                 <Tag
                   primary={item._id === placeModality}
-                  style={{ marginLeft: 15, width: 80 }}
+                  style={{marginLeft: 15, width: 80}}
                   outline={item._id !== placeModality}
                   onPress={() => onSelectModality(item._id)}>
                   {item.name}
@@ -224,64 +223,46 @@ export default function AddPlace({ route, navigation }) {
               )}
             />
 
-            <Text headline semibold style={{ marginTop: 20 }}>
+            <Text headline semibold style={{marginTop: 20}}>
               {t('place_images')}
             </Text>
             <View style={styles.buttonAddImage}>
               <Button
                 full
-                onPress={() => {
-                  onAddImage();
-                }}>
+                onPress={() =>
+                  navigation.navigate('ImageSelector', {
+                    onPhotoSelected,
+                    allowsMultiple: true,
+                    allowsEditing: false,
+                  })
+                }>
                 {t('add_image')}
               </Button>
             </View>
-            <View style={styles.contentImageGird}>
-              <View style={{ flex: 4, marginRight: 10 }}>
-                <Card image={setPickedImagePath}>
-                  <Text headline semibold whiteColor>
-                    Dallas
-                  </Text>
-                </Card>
-              </View>
-              <View style={{ flex: 6 }}>
-                <View style={{ flex: 1 }}>
-                  <Card>
-                    <Text headline semibold whiteColor>
-                      Warsaw
-                    </Text>
-                  </Card>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    marginTop: 10,
-                  }}>
-                  <View style={{ flex: 6, marginRight: 10 }}>
-                    <Card>
-                      <Text headline semibold whiteColor>
-                        Yokohama
-                      </Text>
-                    </Card>
+            <FlatList
+              style={styles.contentImageGird}
+              data={placeImages}
+              horizontal={true}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item}) => {
+                return (
+                  <View
+                    style={{
+                      margin: 10,
+                    }}>
+                    <Image
+                      style={styles.image}
+                      source={{uri: item.uri}}></Image>
                   </View>
-                  <View style={{ flex: 4 }}>
-                    <Card>
-                      <Text headline semibold whiteColor>
-                        10+
-                      </Text>
-                    </Card>
-                  </View>
-                </View>
-              </View>
-            </View>
+                );
+              }}
+            />
 
-            <Text headline semibold style={{ marginTop: 20 }}>
+            <Text headline semibold style={{marginTop: 20}}>
               {t('place_location')}
             </Text>
             <View
               style={{
-                height: 180,
                 width: '100%',
                 marginTop: 10,
               }}>
@@ -293,9 +274,9 @@ export default function AddPlace({ route, navigation }) {
                     latitude: location.latitude || 1.9344,
                     longitude: location.longitude || 103.358727,
                     latitudeDelta: 0.05,
-                    longitudeDelta: 0.1
+                    longitudeDelta: 0.1,
                   }}
-                  onRegionChange={(event) => {
+                  onRegionChange={event => {
                     // console.log(event);
                     // setPlaceLocation({
                     //   latitude: event.latitude || 1.9344,
@@ -304,7 +285,9 @@ export default function AddPlace({ route, navigation }) {
                   }}>
                   <Marker
                     // onDragEnd={(e) => {console.log('dragEnd', e.nativeEvent.coordinate)}}
-                    onDragEnd={e => { setPlaceLocation(e.nativeEvent.coordinate) }}
+                    onDragEnd={e => {
+                      setPlaceLocation(e.nativeEvent.coordinate);
+                    }}
                     draggable
                     coordinate={{
                       latitude: location.latitude || 1.9344,
@@ -315,7 +298,7 @@ export default function AddPlace({ route, navigation }) {
               )}
             </View>
           </ScrollView>
-          <View style={{ paddingHorizontal: 20, paddingVertical: 15 }}>
+          <View style={{paddingHorizontal: 20, paddingVertical: 15}}>
             <Button
               loading={loading}
               full
@@ -327,6 +310,6 @@ export default function AddPlace({ route, navigation }) {
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
-    </View >
+    </View>
   );
 }

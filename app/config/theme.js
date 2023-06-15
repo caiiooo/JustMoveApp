@@ -177,7 +177,7 @@ export const DefaultTheme = {
   light: {
     dark: false,
     colors: {
-      primary: '#E5634D',
+      primary: '#cd4c4e',
       primaryDark: '#C31C0D',
       primaryLight: '#FF8A65',
       accent: '#4A90A4',
@@ -190,7 +190,7 @@ export const DefaultTheme = {
   dark: {
     dark: true,
     colors: {
-      primary: '#E5634D',
+      primary: '#cd4c4e',
       primaryDark: '#C31C0D',
       primaryLight: '#FF8A65',
       accent: '#4A90A4',

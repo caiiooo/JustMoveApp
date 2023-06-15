@@ -9,7 +9,11 @@ import {useTranslation} from 'react-i18next';
 import * as ExpoImagePicker from 'expo-image-picker';
 
 export default function ImageSelector({navigation, route}) {
-  const {onImageSelected, multipleImg} = route.params;
+  const {
+    onPhotoSelected,
+    allowsMultiple = false,
+    allowsEditing = true,
+  } = route.params;
   const {t} = useTranslation();
   const {colors} = useTheme();
 
@@ -21,13 +25,14 @@ export default function ImageSelector({navigation, route}) {
       console.log('status', status);
       if (status === 'granted') {
         let result = await ExpoImagePicker.launchCameraAsync({
-          allowsEditing: true,
+          allowsEditing: allowsEditing,
           aspect: [4, 3],
+          quality: 0.2,
         });
 
         if (!result.canceled) {
           navigation.goBack();
-          onImageSelected(result);
+          onPhotoSelected(result);
           return result.assets;
         }
       }
@@ -36,22 +41,21 @@ export default function ImageSelector({navigation, route}) {
     }
   };
   const selectoImageFromLibrary = async () => {
-    const {
-      status,
-    } = await ExpoImagePicker.requestMediaLibraryPermissionsAsync();
+    const {status} =
+      await ExpoImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (status === 'granted') {
       let result = await ExpoImagePicker.launchImageLibraryAsync({
         mediaTypes: ExpoImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
+        allowsEditing: allowsEditing,
         aspect: [4, 3],
-        quality: 1,
-        allowsMultipleSelection: false,
+        quality: 0.2,
+        allowsMultipleSelection: allowsMultiple,
       });
 
       if (!result.canceled) {
         navigation.goBack();
-        onImageSelected(result);
+        onPhotoSelected(result);
         return result.assets;
       }
     }

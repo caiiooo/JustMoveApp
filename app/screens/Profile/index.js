@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, ScrollView, TouchableOpacity} from 'react-native';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {AuthActions} from '@actions';
 import {BaseStyle, useTheme} from '@config';
 import {
@@ -22,6 +22,9 @@ export default function Profile({navigation}) {
 
   const [loading, setLoading] = useState(false);
   const [userData] = useState(UserData[0]);
+
+  const auth = useSelector(state => state.auth);
+  const login = auth.login?.success;
   const dispatch = useDispatch();
 
   /**
@@ -31,8 +34,15 @@ export default function Profile({navigation}) {
    */
   const onLogOut = () => {
     setLoading(true);
-    dispatch(AuthActions.authentication(false, response => {}));
+    dispatch(AuthActions.singOut());
   };
+
+  useEffect(() => {
+    if(!login){
+      navigation.navigate('SignUp');
+    }
+  }, [login])
+
 
   return (
     <View style={{flex: 1}}>

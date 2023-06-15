@@ -8,7 +8,6 @@ const getModalitys = modalitys => {
   };
 };
 
-
 export const onGetModalitys = modality => dispatch => {
   // console.log('modalitysService');
   // console.log(modalitysService);
@@ -16,6 +15,6 @@ export const onGetModalitys = modality => dispatch => {
     // console.log("+======")
     // console.log(data)
     // console.log("+======")
-    // dispatch(getModalitys(data.modalitys));
-  })
+    dispatch(getModalitys(data.modalitys));
+  });
 };

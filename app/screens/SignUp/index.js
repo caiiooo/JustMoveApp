@@ -4,6 +4,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {BaseStyle, useTheme} from '@config';
 import {
@@ -14,6 +15,7 @@ import {
   TextInput,
   Image,
 } from '@components';
+import userService from '@services/userService';
 import styles from './styles';
 import {useTranslation} from 'react-i18next';
 
@@ -25,15 +27,15 @@ export default function SignUp({navigation}) {
     android: 20,
   });
 
-  const [image, setImage] = useState(null);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [repassword, setRepassword] = useState('');
+  const [photo, setPhoto] = useState(null);
+  const [username, setUsername] = useState('caio');
+  const [email, setEmail] = useState('caio@Hiboost.com.br');
+  const [password, setPassword] = useState('1234');
+  const [repassword, setRepassword] = useState('1234');
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState({
-    name: true,
+    username: true,
     password: true,
     passwordRepeat: true,
     email: true,
@@ -45,12 +47,11 @@ export default function SignUp({navigation}) {
    *
    */
   const onSignUp = () => {
-    console.log('TEST');
-
-    if (name.trim() == '' || email.trim() == '' || address.trim() == '') {
+    if (username.trim() == '' || email.trim() == '') {
+      console.log('aaa');
       setSuccess({
         ...success,
-        name: name != '' ? true : false,
+        username: username != '' ? true : false,
         email: email != '' ? true : false,
         address: address != '' ? true : false,
       });
@@ -65,22 +66,43 @@ export default function SignUp({navigation}) {
       return false;
     }
     if (password !== repassword) {
+      setRepassword('');
       setSuccess({
         ...success,
         repassword: false,
       });
       return false;
     }
-
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      // navigation.navigate('SignIn');
-    }, 500);
+    submitSignUp();
   };
 
-  const onImageSelected = assets => {
-    setImage(assets.uri);
+  const submitSignUp = () => {
+    console.log('tentando enviar');
+    setLoading(true);
+    userService
+      .createUser({
+        username,
+        email,
+        password,
+        photo,
+      })
+      .then(result => {
+        setLoading(false);
+        if (result.success) navigation.navigate('SignIn');
+      })
+      .catch(error => {
+        setLoading(false);
+        if (error?.error && typeof error?.error === 'string')
+          return Alert.alert(error.error);
+        if (error?.error?.message && typeof error?.error?.message === 'string')
+          return Alert.alert(error.error.message);
+        return Alert.alert('Erro desconhecido');
+      });
+  };
+
+  const onPhotoSelected = assets => {
+    console.log(assets.uri);
+    setPhoto(assets.uri);
   };
 
   return (
@@ -113,13 +135,13 @@ export default function SignUp({navigation}) {
               <TouchableOpacity
                 onPress={() =>
                   navigation.navigate('ImageSelector', {
-                    onImageSelected,
+                    onPhotoSelected,
                     multipleImg: false,
                   })
                 }
                 activeOpacity={0.9}>
-                {image ? (
-                  <Image source={{uri: image}} style={styles.image} />
+                {photo ? (
+                  <Image source={{uri: photo}} style={styles.image} />
                 ) : (
                   <Icon
                     name="camera"
@@ -139,10 +161,10 @@ export default function SignUp({navigation}) {
             />
             <TextInput
               style={{marginTop: 10}}
-              onChangeText={text => setName(text)}
-              placeholder={t('input_name')}
-              success={success.name}
-              value={name}
+              onChangeText={text => setUsername(text)}
+              placeholder={t('input_username')}
+              success={success.username}
+              value={username}
             />
             <TextInput
               style={{marginTop: 10}}

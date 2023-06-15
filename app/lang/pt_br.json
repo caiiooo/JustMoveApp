@@ -11,10 +11,12 @@
   "select_camera": "Camera",
   "select_library": "Biblioteca",
   "input_email": "E-mail",
-  "input_name": "Nome",
+  "input_username": "Nome",
   "input_password": "Senha",
   "input_repassword": "Repetir a senha",
-  
+  "sign_in": "Cadastrar",
+  "forgot_your_password": "Forgot your password?",
+  "sign_up": "Sign Up",
   "account": "Perfil",
 
   
@@ -257,9 +259,7 @@
   "default": "Default",
   "dark_theme": "Dark Theme",
   "app_version": "App Version",
-  "sign_in": "Sign In",
-  "forgot_your_password": "Forgot your password?",
-  "sign_up": "Sign Up",
+  
   "packages": "Packages",
   "travel_agency": "Travel Agency",
   "participants": "Participants",
