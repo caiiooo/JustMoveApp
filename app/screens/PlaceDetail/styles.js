@@ -25,6 +25,7 @@ export default StyleSheet.create({
     width: '100%',
     borderRadius: 8,
     alignItems: 'center',
+    justifyContent:'center',
     marginBottom: 20,
     borderWidth: 0.5,
     shadowOffset: {width: 1.5, height: 1.5},

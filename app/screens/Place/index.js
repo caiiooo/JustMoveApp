@@ -140,7 +140,7 @@ export default function Place({navigation}) {
                   style={{
                     paddingBottom: 10,
                   }}
-                  onPress={() => navigation.navigate('PlaceDetail')}
+                  onPress={() => navigation.navigate('PlaceDetail', {_id: item._id})}
                   onPressTag={() => navigation.navigate('Review')}
                 />
               )}
@@ -209,7 +209,9 @@ export default function Place({navigation}) {
                     rateStatus={item.rateStatus}
                     numReviews={item.numReviews}
                     services={item.services}
-                    onPress={() => navigation.navigate('PlaceDetail')}
+                    onPress={() =>
+                      navigation.navigate('PlaceDetail', {_id: item._id})
+                    }
                     style={{
                       marginBottom: 15,
                       marginLeft: 15,
@@ -283,7 +285,7 @@ export default function Place({navigation}) {
                     marginBottom: 15,
                   }}
                   onPress={() => {
-                    navigation.navigate('PlaceDetail');
+                    navigation.navigate('PlaceDetail', {_id: item._id});
                   }}
                 />
               )}
@@ -350,7 +352,7 @@ export default function Place({navigation}) {
                   style={{
                     marginBottom: 10,
                   }}
-                  onPress={() => navigation.navigate('PlaceDetail')}
+                  onPress={() => navigation.navigate('PlaceDetail', {_id: item._id})}
                   onPressTag={() => navigation.navigate('Preview')}
                 />
               )}

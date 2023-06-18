@@ -11,6 +11,7 @@ import AddPlace from '@screens/AddPlace';
 import Place from '@screens/Place';
 import PlaceDetail from '@screens/PlaceDetail';
 import ImageSelector from '@screens/ImageSelector';
+import PlaceImageGalery from '@screens/PlaceImageGalery';
 
 /* Stack Screen */
 import Profile1 from '@screens/Profile1';
@@ -106,6 +107,7 @@ export default function Main() {
       <MainStack.Screen name="Place" component={Place} />
       <MainStack.Screen name="PlaceDetail" component={PlaceDetail} />
       <MainStack.Screen name="ImageSelector" component={ImageSelector} />
+      <MainStack.Screen name="PlaceImageGalery" component={PlaceImageGalery} />
       <MainStack.Screen name="Profile1" component={Profile1} />
       <MainStack.Screen name="Profile2" component={Profile2} />
       <MainStack.Screen name="Profile3" component={Profile3} />

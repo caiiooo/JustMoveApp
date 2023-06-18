@@ -19,8 +19,9 @@ import ProfileDetail from './ProfileDetail';
 import ProfileDescription from './ProfileDescription';
 import ProfileGroup from './ProfileGroup';
 import ProfileGroupSmall from './ProfileGroupSmall';
-import RateDetail from './RateDetail';
 import ListThumbCircle from './ListThumbCircle';
+import RateDetail from './RateDetail';
+import PlaceRateDetail from './PlaceRateDetail';
 import PostListItem from './PostListItem';
 import Coupon from './Coupon';
 import PostItem from './PostItem';
@@ -78,6 +79,7 @@ export {
   ProfileDescription,
   ProfileGroup,
   RateDetail,
+  PlaceRateDetail,
   PostListItem,
   Coupon,
   PostItem,

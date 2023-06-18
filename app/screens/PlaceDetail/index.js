@@ -18,27 +18,31 @@ import {
   Button,
   RoomType,
   Card,
-  RateDetail,
-  CommentItem
+  PlaceRateDetail,
+  CommentItem,
 } from '@components';
 import * as Utils from '@utils';
+import placeService from '@services/placeService';
 import {ReviewData} from '@data';
-import {InteractionManager, RefreshControl} from 'react-native';
+import {InteractionManager, RefreshControl, Alert} from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import styles from './styles';
 import {HelpBlockData} from '@data';
 import {useTranslation} from 'react-i18next';
 
-export default function PlaceDetail({navigation}) {
+export default function PlaceDetail({navigation, route}) {
+  const {_id} = route.params;
   const {colors} = useTheme();
   const {t} = useTranslation();
 
+  const [place, setPlace] = useState(null);
   const [heightHeader, setHeightHeader] = useState(Utils.heightHeader());
   const [renderMapView, setRenderMapView] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [region] = useState({
     latitude: 1.9344,
     longitude: 103.358727,
-    latitudeDelta: 0.05,
+    latitudeDelta: 0.02,
     longitudeDelta: 0.004,
   });
   const [roomType] = useState([
@@ -105,13 +109,142 @@ export default function PlaceDetail({navigation}) {
     });
   }, []);
 
+  useEffect(() => {
+    console.log('----------------', _id);
+    setLoading(true);
+    placeService
+      .getPlace(_id)
+      .then(result => {
+        console.log('result', result);
+        if (result) setPlace(result);
+        setLoading(false);
+      })
+      .catch(error => {
+        setLoading(false);
+        if (error?.error && typeof error?.error === 'string')
+          return Alert.alert(error.error);
+        if (error?.error?.message && typeof error?.error?.message === 'string')
+          return Alert.alert(error.error.message);
+        return Alert.alert('Erro desconhecido');
+      });
+  }, [_id]);
+
   const heightImageBanner = Utils.scaleWithPixel(250, 1);
   const marginTopBanner = heightImageBanner - heightHeader - 40;
+
+  const renderPhotos = photos => {
+    if (!photos || !Array.isArray(photos)) return;
+    if (photos.length === 1)
+      return (
+        <>
+          <View style={{flex: 4, marginRight: 10}}>
+            <Card image={{uri: place.photo[0]}}></Card>
+          </View>
+          <View style={{flex: 6}}></View>
+        </>
+      );
+    if (photos.length === 2)
+      return (
+        <>
+          <View style={{flex: 4, marginRight: 10}}>
+            <Card image={place.photo[0]}></Card>
+          </View>
+          <View style={{flex: 6}}>
+            <View style={{flex: 1}}>
+              <Card image={place.photo[1]}>
+                <Text headline semibold whiteColor></Text>
+              </Card>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                marginTop: 10,
+              }}></View>
+          </View>
+        </>
+      );
+    if (photos.length === 3)
+      return (
+        <>
+          <View style={{flex: 4, marginRight: 10}}>
+            <Card image={place.photo[0]}>
+              <Text headline semibold whiteColor>
+                Dallas
+              </Text>
+            </Card>
+          </View>
+          <View style={{flex: 6}}>
+            <View style={{flex: 1}}>
+              <Card image={place.photo[1]}>
+                <Text headline semibold whiteColor></Text>
+              </Card>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                marginTop: 10,
+              }}>
+              <View style={{flex: 6, marginRight: 10}}>
+                <Card image={place.photo[2]}>
+                  <Text headline semibold whiteColor>
+                    Yokohama
+                  </Text>
+                </Card>
+              </View>
+            </View>
+          </View>
+        </>
+      );
+    if (photos.length === 4)
+      return (
+        <>
+          <View style={{flex: 4, marginRight: 10}}>
+            <Card image={place.photo[0]}>
+              <Text headline semibold whiteColor>
+                Dallas
+              </Text>
+            </Card>
+          </View>
+          <View style={{flex: 6}}>
+            <View style={{flex: 1}}>
+              <Card image={place.photo[1]}>
+                <Text headline semibold whiteColor></Text>
+              </Card>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                marginTop: 10,
+              }}>
+              <View style={{flex: 6, marginRight: 10}}>
+                <Card image={place.photo[2]}>
+                  <Text headline semibold whiteColor>
+                    Yokohama
+                  </Text>
+                </Card>
+              </View>
+              <View style={{flex: 4}}>
+                <Card image={place.photo[3]}>
+                  <Text headline semibold whiteColor>
+                    {photo.length - 4}+
+                  </Text>
+                </Card>
+              </View>
+            </View>
+          </View>
+        </>
+      );
+  };
+
+  if (!place) return <></>;
 
   return (
     <View style={{flex: 1}}>
       <Animated.Image
-        source={Images.room6}
+        source={{uri: place?.photo[0]?.url}}
         style={[
           styles.imgBanner,
           {
@@ -146,7 +279,10 @@ export default function PlaceDetail({navigation}) {
           navigation.goBack();
         }}
         onPressRight={() => {
-          navigation.navigate('PreviewImage');
+          navigation.navigate('PlaceImageGalery', {
+            photo: place.photo,
+            title: place.name,
+          });
         }}
       />
       <SafeAreaView style={{flex: 1}} edges={['right', 'left', 'bottom']}>
@@ -174,28 +310,19 @@ export default function PlaceDetail({navigation}) {
                 },
               ]}>
               <Text title2 semibold style={{marginBottom: 5}}>
-                Hilton San Francisco
+                {place.name}
               </Text>
               <StarRating
                 disabled={true}
                 starSize={14}
                 maxStars={5}
-                rating={4.5}
+                rating={place.rating}
                 selectedStar={rating => {}}
                 fullStarColor={BaseColor.yellowColor}
               />
-              <Text
-                body2
-                style={{
-                  marginTop: 5,
-                  textAlign: 'center',
-                }}>
-                Facilities provided may range from a modest quality mattress in
-                a small room to large suites
-              </Text>
             </View>
             {/* Description */}
-            <View
+            {/* <View
               style={[styles.blockView, {borderBottomColor: colors.border}]}>
               <Text headline semibold>
                 {t('description')}
@@ -204,20 +331,14 @@ export default function PlaceDetail({navigation}) {
                 218 Austen Mountain, consectetur adipiscing, sed eiusmod tempor
                 incididunt ut labore et dolore
               </Text>
-            </View>
+            </View> */}
             {/* Facilities Icon */}
             <View
               style={[
                 styles.contentService,
                 {borderBottomColor: colors.border},
               ]}>
-              {[
-                {key: '1', name: 'wifi'},
-                {key: '2', name: 'coffee'},
-                {key: '3', name: 'bath'},
-                {key: '4', name: 'car'},
-                {key: '5', name: 'paw'},
-              ].map((item, index) => (
+              {place.modality.map((item, index) => (
                 <View style={{alignItems: 'center'}} key={'service' + index}>
                   <Icon name={item.name} size={24} color={colors.accent} />
                   <Text overline grayColor style={{marginTop: 4}}>
@@ -242,12 +363,16 @@ export default function PlaceDetail({navigation}) {
                   <MapView
                     provider={PROVIDER_GOOGLE}
                     style={styles.map}
-                    region={region}
+                    region={{
+                      ...region,
+                      latitude: place.location.coordinates[1],
+                      longitude: place.location.coordinates[0],
+                    }}
                     onRegionChange={() => {}}>
                     <Marker
                       coordinate={{
-                        latitude: 1.9344,
-                        longitude: 103.358727,
+                        latitude: place.location.coordinates[1],
+                        longitude: place.location.coordinates[0],
                       }}
                     />
                   </MapView>
@@ -256,7 +381,8 @@ export default function PlaceDetail({navigation}) {
             </View>
 
             {/* Galery */}
-            <View style={[styles.blockView, {borderBottomColor: colors.border}]}>
+            <View
+              style={[styles.blockView, {borderBottomColor: colors.border}]}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -266,55 +392,25 @@ export default function PlaceDetail({navigation}) {
                 <Text headline semibold>
                   {t('galery')}
                 </Text>
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('PlaceImageGalery', {
+                      photo: place.photo,
+                      title: place.name,
+                    })
+                  }>
                   <Text footnote grayColor>
                     Show more
                   </Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.contentImageGird}>
-                <View style={{flex: 4, marginRight: 10}}>
-                  <Card image={Images.trip7}>
-                    <Text headline semibold whiteColor>
-                      Dallas
-                    </Text>
-                  </Card>
-                </View>
-                <View style={{flex: 6}}>
-                  <View style={{flex: 1}}>
-                    <Card image={Images.trip3}>
-                      <Text headline semibold whiteColor>
-                        Warsaw
-                      </Text>
-                    </Card>
-                  </View>
-                  <View
-                    style={{
-                      flex: 1,
-                      flexDirection: 'row',
-                      marginTop: 10,
-                    }}>
-                    <View style={{flex: 6, marginRight: 10}}>
-                      <Card image={Images.trip4}>
-                        <Text headline semibold whiteColor>
-                          Yokohama
-                        </Text>
-                      </Card>
-                    </View>
-                    <View style={{flex: 4}}>
-                      <Card image={Images.trip6}>
-                        <Text headline semibold whiteColor>
-                          10+
-                        </Text>
-                      </Card>
-                    </View>
-                  </View>
-                </View>
+                {renderPhotos(place.photo)}
               </View>
             </View>
             {/* Review */}
             <View style={styles.blockView}>
-              <ReviewTab></ReviewTab>
+              <ReviewTab reviews={place.reviews} rating={place.rating} />
             </View>
           </View>
         </ScrollView>
@@ -341,13 +437,13 @@ export default function PlaceDetail({navigation}) {
   );
 }
 
-function ReviewTab({navigation}) {
+function ReviewTab({navigation, rating, reviews}) {
   const [refreshing] = useState(false);
   const [rateDetail] = useState({
-    point: 4.7,
+    point: rating,
     maxPoint: 5,
     totalRating: 25,
-    data: ['80%', '10%', '10%', '0%', '0%'],
+    // data: ['80%', '10%', '10%', '0%', '0%'],
   });
   const [reviewList] = useState(ReviewData);
   const {colors} = useTheme();
@@ -365,7 +461,7 @@ function ReviewTab({navigation}) {
       data={reviewList}
       keyExtractor={(item, index) => item.id}
       ListHeaderComponent={() => (
-        <RateDetail
+        <PlaceRateDetail
           point={rateDetail.point}
           maxPoint={rateDetail.maxPoint}
           totalRating={rateDetail.totalRating}

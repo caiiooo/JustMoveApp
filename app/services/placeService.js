@@ -14,7 +14,10 @@ class placeService {
           bodyFormData.append('placeImages', {
             uri: o.uri.replace('file://', ''),
             type: 'image/jpg',
-            name: `${data.name.replace(' ', '-')}_${moment().get()}_${index}.jpg`,
+            name: `${data.name.replace(
+              ' ',
+              '-',
+            )}_${moment().get()}_${index}.jpg`,
           });
         });
 
@@ -62,6 +65,20 @@ class placeService {
     return new Promise((resolve, reject) => {
       axios
         .get(config.databaseURL + '/places')
+        .then(response => {
+          if (response.data) {
+            resolve(response.data);
+          } else {
+            reject(response.error);
+          }
+        })
+        .catch(() => reject('Erro desconhecido'));
+    });
+  };
+  getPlace = (_id) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`${config.databaseURL}/places/${_id}`)
         .then(response => {
           if (response.data) {
             resolve(response.data);
