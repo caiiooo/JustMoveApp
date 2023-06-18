@@ -5,6 +5,7 @@ import {
   FlatList,
   Animated,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import {BaseColor, Images, useTheme} from '@config';
 import {
@@ -12,22 +13,19 @@ import {
   SafeAreaView,
   Icon,
   Text,
-  StarRating,
-  PostListItem,
-  HelpBlock,
-  Button,
-  RoomType,
   Card,
   PlaceRateDetail,
   CommentItem,
+  ProfileGroup,
+  Tag,
 } from '@components';
+import {daysBetween} from '@utils/dateUtil';
 import * as Utils from '@utils';
 import placeService from '@services/placeService';
 import {ReviewData} from '@data';
 import {InteractionManager, RefreshControl, Alert} from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import styles from './styles';
-import {HelpBlockData} from '@data';
 import {useTranslation} from 'react-i18next';
 
 export default function PlaceDetail({navigation, route}) {
@@ -45,62 +43,7 @@ export default function PlaceDetail({navigation, route}) {
     latitudeDelta: 0.02,
     longitudeDelta: 0.004,
   });
-  const [roomType] = useState([
-    {
-      id: '1',
-      image: Images.room8,
-      name: 'Standard Twin Room',
-      price: '$399,99',
-      available: 'Hurry Up! This is your last room!',
-      services: [
-        {icon: 'wifi', name: 'Free Wifi'},
-        {icon: 'shower', name: 'Shower'},
-        {icon: 'users', name: 'Max 3 aduts'},
-        {icon: 'subway', name: 'Nearby Subway'},
-      ],
-    },
-    {
-      id: '2',
-      image: Images.room5,
-      name: 'Delux Room',
-      price: '$399,99',
-      available: 'Hurry Up! This is your last room!',
-      services: [
-        {icon: 'wifi', name: 'Free Wifi'},
-        {icon: 'shower', name: 'Shower'},
-        {icon: 'users', name: 'Max 3 aduts'},
-        {icon: 'subway', name: 'Nearby Subway'},
-      ],
-    },
-  ]);
-  const [todo] = useState([
-    {
-      id: '1',
-      title: 'South Travon',
-      image: Images.trip1,
-    },
-    {
-      id: '2',
-      title: 'South Travon',
-      image: Images.trip2,
-    },
-    {
-      id: '3',
-      title: 'South Travon',
-      image: Images.trip3,
-    },
-    {
-      id: '4',
-      title: 'South Travon',
-      image: Images.trip4,
-    },
-    {
-      id: '5',
-      title: 'South Travon',
-      image: Images.trip5,
-    },
-  ]);
-  const [helpBlock] = useState(HelpBlockData);
+
   const deltaY = new Animated.Value(0);
 
   useEffect(() => {
@@ -243,22 +186,60 @@ export default function PlaceDetail({navigation, route}) {
 
   return (
     <View style={{flex: 1}}>
-      <Animated.Image
-        source={{uri: place?.photo[0]?.url}}
+      <Animated.View
         style={[
           styles.imgBanner,
           {
             height: deltaY.interpolate({
               inputRange: [
                 0,
-                Utils.scaleWithPixel(200),
-                Utils.scaleWithPixel(200),
+                Utils.scaleWithPixel(140),
+                Utils.scaleWithPixel(140),
               ],
               outputRange: [heightImageBanner, heightHeader, heightHeader],
             }),
           },
-        ]}
-      />
+        ]}>
+        <Image source={{uri: place?.photo[0]?.url}} style={{flex: 1}} />
+        <Animated.View
+          style={{
+            position: 'absolute',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            paddingHorizontal: 20,
+            width: '100%',
+            bottom: 15,
+            opacity: deltaY.interpolate({
+              inputRange: [
+                0,
+                Utils.scaleWithPixel(140),
+                Utils.scaleWithPixel(140),
+              ],
+              outputRange: [1, 0, 0],
+            }),
+          }}>
+          <View style={styles.rowBanner}>
+            <Image
+              source={{uri: place?.photo[0]?.url}}
+              style={styles.userIcon}
+            />
+            <View style={{alignItems: 'flex-start'}}>
+              <View style={{flex: 1, flexDirection: 'row', alignItems:'center'}}>
+                <Text>Adicionado por </Text>
+                <Text headline semibold whiteColor>
+                  {place.creator.username}
+                </Text>
+              </View>
+              <Text footnote whiteColor>
+                {daysBetween(new Date(place.created), new Date())} |{' '}
+                {place.reviews.length + ' ' + t('reviews')}
+              </Text>
+            </View>
+          </View>
+          <Tag rateSmall>12 Km</Tag>
+        </Animated.View>
+      </Animated.View>
       {/* Header */}
       <Header
         title=""
@@ -296,31 +277,22 @@ export default function PlaceDetail({navigation, route}) {
           ])}
           onContentSizeChange={() => setHeightHeader(Utils.heightHeader())}
           scrollEventThrottle={8}>
+          <View style={{height: 255 - heightHeader}} />
           {/* Main Container */}
-          <View style={{paddingHorizontal: 20}}>
+          <View style={{paddingHorizontal: 20, marginBottom: 20}}>
             {/* Information */}
-            <View
-              style={[
-                styles.contentBoxTop,
-                {
-                  marginTop: marginTopBanner,
-                  backgroundColor: colors.card,
-                  shadowColor: colors.border,
-                  borderColor: colors.border,
-                },
-              ]}>
-              <Text title2 semibold style={{marginBottom: 5}}>
-                {place.name}
-              </Text>
-              <StarRating
-                disabled={true}
-                starSize={14}
-                maxStars={5}
-                rating={place.rating}
-                selectedStar={rating => {}}
-                fullStarColor={BaseColor.yellowColor}
-              />
-            </View>
+            <Text title1 semibold numberOfLines={1} style={{marginBottom: 10}}>
+              {place.name}
+            </Text>
+            <ProfileGroup
+              name="Steve, Lincoln, Harry"
+              detail={`15 ${t('people_like_this')}`}
+              users={[
+                {image: Images.profile1},
+                {image: Images.profile3},
+                {image: Images.profile4},
+              ]}
+            />
             {/* Description */}
             {/* <View
               style={[styles.blockView, {borderBottomColor: colors.border}]}>
@@ -340,7 +312,11 @@ export default function PlaceDetail({navigation, route}) {
               ]}>
               {place.modality.map((item, index) => (
                 <View style={{alignItems: 'center'}} key={'service' + index}>
-                  <Icon name={item.name} size={24} color={colors.accent} />
+                  <Image
+                    style={{width: 24, height: 30}}
+                    source={{uri: item.icon}}
+                  />
+                  {/* <Icon name={item.name} size={24} color={colors.accent} /> */}
                   <Text overline grayColor style={{marginTop: 4}}>
                     {item.name}
                   </Text>
@@ -410,7 +386,28 @@ export default function PlaceDetail({navigation, route}) {
             </View>
             {/* Review */}
             <View style={styles.blockView}>
-              <ReviewTab reviews={place.reviews} rating={place.rating} />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginTop: 20,
+                }}>
+                <Text headline semibold>
+                  {t('reviews')}
+                </Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('AddReview', {
+                      photo: place.photo,
+                      title: place.name,
+                    })
+                  }>
+                  <Text footnote grayColor>
+                    Add Review
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <PlaceReviewTab reviews={place.reviews} rating={place.rating} />
             </View>
           </View>
         </ScrollView>
@@ -437,7 +434,7 @@ export default function PlaceDetail({navigation, route}) {
   );
 }
 
-function ReviewTab({navigation, rating, reviews}) {
+function PlaceReviewTab({navigation, rating, reviews}) {
   const [refreshing] = useState(false);
   const [rateDetail] = useState({
     point: rating,

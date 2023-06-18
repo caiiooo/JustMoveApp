@@ -19,6 +19,18 @@ export default StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
+  rowBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+    userIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'white',
+    marginRight: 5,
+  },
   contentBoxTop: {
     padding: 10,
     height: 120,

@@ -8,6 +8,7 @@ import { Icon } from '@components';
 
 /* Just Move Screen */
 import AddPlace from '@screens/AddPlace';
+import AddReview from '@screens/AddReview';
 import Place from '@screens/Place';
 import PlaceDetail from '@screens/PlaceDetail';
 import ImageSelector from '@screens/ImageSelector';
@@ -104,6 +105,7 @@ export default function Main() {
         component={BottomTabNavigator}
       />
       <MainStack.Screen name="AddPlace" component={AddPlace} />
+      <MainStack.Screen name="AddReview" component={AddReview} />
       <MainStack.Screen name="Place" component={Place} />
       <MainStack.Screen name="PlaceDetail" component={PlaceDetail} />
       <MainStack.Screen name="ImageSelector" component={ImageSelector} />

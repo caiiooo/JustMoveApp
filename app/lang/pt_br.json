@@ -18,6 +18,11 @@
   "forgot_your_password": "Forgot your password?",
   "sign_up": "Sign Up",
   "account": "Perfil",
+  "reviews": "Reviews",
+  "review_coment": "Comentário",
+  "review_coment_placeholeder": "Descreva sua impressões sobre o lugar.",
+  "add_review_button": "Adicionar Reviews",
+  "tap_to_rate": "Clique nas estrelas para avaliar",
 
   
 
@@ -109,7 +114,6 @@
   "download": "Download",
   "car": "Car",
   "economy": "Economy",
-  "reviews": "Reviews",
   "input": "Input review",
   "car_detail": "Car Detail",
   "book": "Book",
@@ -161,7 +165,6 @@
   "todo_things": "Todo Things",
   "show_more": "Show More",
   "if_you_have_question": "If You Have Any Questions",
-  "tap_to_rate": "Tap a star to rate",
   "durating": "Durating",
   "rating": "Rating",
   "duration": "Duration",
